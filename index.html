@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demos Protocol — By the People, For the People</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1f2d;
+    --navy-dark: #080f16;
+    --navy-mid: #142538;
+    --green: #00875a;
+    --green-light: #00c97a;
+    --green-pale: #e8f5ee;
+    --gold: #ffd700;
+    --cream: #f5f0e8;
+    --white: #ffffff;
+    --gray: #8a9aaa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--navy-dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(8,15,22,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,135,90,0.15);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px; font-weight: 700; letter-spacing: 3px;
+    color: var(--white); text-decoration: none;
+  }
+  .nav-logo span { color: var(--green-light); }
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a {
+    font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--gray); text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta {
+    background: var(--green) !important; color: var(--white) !important;
+    padding: 10px 24px; border-radius: 2px; letter-spacing: 1px;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--green-light) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 120px 48px 80px;
+    text-align: center;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, rgba(0,135,90,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 80%, rgba(0,201,122,0.06) 0%, transparent 50%);
+  }
+
+  canvas#particles {
+    position: absolute; inset: 0; opacity: 0.4;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--green-light); margin-bottom: 24px;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 900; line-height: 1.0;
+    margin-bottom: 12px;
+    opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-title .accent { color: var(--green-light); display: block; }
+
+  .hero-subtitle {
+    font-size: clamp(18px, 2.5vw, 26px);
+    font-weight: 300; font-style: italic;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 48px; max-width: 600px;
+    opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-ctas {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .btn-primary {
+    background: var(--green); color: var(--white);
+    padding: 16px 40px; font-size: 14px; letter-spacing: 2px;
+    text-transform: uppercase; border: none; cursor: pointer;
+    font-family: 'Source Serif 4', serif; border-radius: 2px;
+    text-decoration: none; transition: background 0.2s, transform 0.1s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--green-light); transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: transparent; color: var(--white);
+    padding: 16px 40px; font-size: 14px; letter-spacing: 2px;
+    text-transform: uppercase; border: 1px solid rgba(255,255,255,0.3);
+    cursor: pointer; font-family: 'Source Serif 4', serif; border-radius: 2px;
+    text-decoration: none; transition: border-color 0.2s, transform 0.1s;
+    display: inline-block;
+  }
+  .btn-secondary:hover { border-color: var(--green-light); transform: translateY(-1px); }
+
+  .hero-stat-row {
+    display: flex; gap: 64px; justify-content: center; flex-wrap: wrap;
+    margin-top: 72px;
+    opacity: 0; animation: fadeUp 0.8s 1s forwards;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px; font-weight: 700; color: var(--green-light);
+    display: block;
+  }
+  .hero-stat-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gray); margin-top: 4px; display: block;
+  }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0; animation: fadeUp 0.8s 1.4s forwards;
+  }
+  .scroll-hint span { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray); }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--green-light), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+
+  /* SECTION BASE */
+  section { padding: 120px 48px; position: relative; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--green-light); margin-bottom: 16px; display: block;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 52px); font-weight: 700;
+    line-height: 1.15; margin-bottom: 24px;
+  }
+  .section-body {
+    font-size: 18px; font-weight: 300; line-height: 1.8;
+    color: rgba(255,255,255,0.75); max-width: 640px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 60px; height: 2px;
+    background: linear-gradient(to right, var(--green), transparent);
+    margin: 24px 0;
+  }
+
+  /* PROBLEM SECTION */
+  .problem { background: var(--navy); }
+  .problem-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    margin-top: 64px; border: 1px solid rgba(255,255,255,0.06);
+  }
+  .problem-cell {
+    padding: 48px; border: 1px solid rgba(255,255,255,0.06);
+    position: relative; overflow: hidden;
+  }
+  .problem-cell::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: var(--green); opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .problem-cell:hover::before { opacity: 1; }
+  .problem-cell-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px; font-weight: 900;
+    color: rgba(0,201,122,0.1); line-height: 1;
+    margin-bottom: 16px; display: block;
+  }
+  .problem-cell h3 {
+    font-size: 20px; font-weight: 600; margin-bottom: 12px;
+    font-family: 'Playfair Display', serif;
+  }
+  .problem-cell p { font-size: 15px; line-height: 1.75; color: rgba(255,255,255,0.6); }
+
+  /* MECHANICS */
+  .mechanics { background: var(--navy-dark); }
+  .mechanics-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    margin-top: 64px;
+  }
+  .mechanic-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(0,135,90,0.2);
+    padding: 40px 32px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .mechanic-card:hover {
+    border-color: rgba(0,201,122,0.5);
+    transform: translateY(-4px);
+  }
+  .mechanic-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 3px;
+    color: var(--green-light); margin-bottom: 20px; display: block;
+  }
+  .mechanic-card h3 {
+    font-size: 22px; font-family: 'Playfair Display', serif;
+    margin-bottom: 16px; line-height: 1.3;
+  }
+  .mechanic-card p { font-size: 15px; line-height: 1.75; color: rgba(255,255,255,0.65); }
+  .mechanic-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 1px; background: linear-gradient(to right, var(--green), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .mechanic-card:hover::after { opacity: 1; }
+
+  /* QUOTE */
+  .quote-section {
+    background: var(--green);
+    padding: 80px 48px; text-align: center;
+  }
+  .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 3vw, 40px);
+    font-style: italic; font-weight: 400;
+    max-width: 800px; margin: 0 auto 24px;
+    line-height: 1.5; color: var(--navy-dark);
+  }
+  .quote-attr {
+    font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(13,31,45,0.6);
+  }
+
+  /* INVESTMENT POOLS */
+  .pools { background: var(--navy); }
+  .pools-list { margin-top: 56px; display: flex; flex-direction: column; gap: 0; }
+  .pool-item {
+    display: flex; align-items: center; gap: 32px;
+    padding: 28px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+    transition: padding-left 0.3s;
+    cursor: default;
+  }
+  .pool-item:hover { padding-left: 16px; }
+  .pool-item:hover .pool-arrow { color: var(--green-light); }
+  .pool-arrow { font-size: 20px; color: var(--green); transition: color 0.2s; flex-shrink: 0; }
+  .pool-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-weight: 600; min-width: 280px;
+  }
+  .pool-desc { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.6; flex: 1; }
+  .pool-return {
+    font-size: 15px; font-weight: 600; color: var(--green-light);
+    white-space: nowrap; min-width: 80px; text-align: right;
+  }
+
+  /* OREGON */
+  .oregon { background: var(--navy-dark); }
+  .oregon-inner {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .oregon-facts { margin-top: 40px; display: flex; flex-direction: column; gap: 24px; }
+  .oregon-fact {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 20px; background: var(--navy-mid);
+    border-left: 3px solid var(--green);
+  }
+  .oregon-fact-icon { font-size: 20px; margin-top: 2px; flex-shrink: 0; }
+  .oregon-fact-text h4 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .oregon-fact-text p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.6; }
+  .oregon-visual {
+    display: flex; flex-direction: column; gap: 16px; align-items: center;
+  }
+  .oregon-token {
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #2d8a57, #145c35);
+    border: 3px solid rgba(0,201,122,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 52px; font-weight: 900; color: rgba(255,255,255,0.15);
+    letter-spacing: 2px;
+    position: relative; overflow: hidden;
+  }
+  .oregon-token-inner {
+    text-align: center; position: relative; z-index: 1;
+  }
+  .oregon-token-dmt {
+    font-size: 42px; font-weight: 900; color: white;
+    letter-spacing: 6px; display: block;
+  }
+  .oregon-token-sub {
+    font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.5);
+    text-transform: uppercase; margin-top: 4px; display: block;
+  }
+  .pilot-target {
+    text-align: center; padding: 24px; background: var(--navy-mid);
+    border: 1px solid rgba(0,135,90,0.3); width: 100%; max-width: 280px;
+  }
+  .pilot-target-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px; font-weight: 900; color: var(--green-light);
+    display: block;
+  }
+  .pilot-target-label {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gray); margin-top: 4px; display: block;
+  }
+
+  /* REGISTER */
+  .register {
+    background: var(--navy-mid);
+    border-top: 1px solid rgba(0,135,90,0.2);
+    border-bottom: 1px solid rgba(0,135,90,0.2);
+    text-align: center; padding: 120px 48px;
+  }
+  .register-form {
+    display: flex; gap: 0; max-width: 520px; margin: 40px auto 0;
+    border: 1px solid rgba(0,201,122,0.3);
+  }
+  .register-form input {
+    flex: 1; padding: 18px 24px;
+    background: rgba(255,255,255,0.05); border: none; outline: none;
+    color: var(--white); font-family: 'Source Serif 4', serif; font-size: 15px;
+  }
+  .register-form input::placeholder { color: rgba(255,255,255,0.3); }
+  .register-form button {
+    background: var(--green); color: var(--white); border: none;
+    padding: 18px 32px; cursor: pointer; font-family: 'Source Serif 4', serif;
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    transition: background 0.2s; white-space: nowrap;
+  }
+  .register-form button:hover { background: var(--green-light); }
+  .register-note {
+    font-size: 12px; color: var(--gray); margin-top: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy-dark);
+    padding: 60px 48px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 24px;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-weight: 700; letter-spacing: 3px; color: var(--white);
+  }
+  .footer-logo span { color: var(--green-light); }
+  .footer-links { display: flex; gap: 32px; }
+  .footer-links a {
+    font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--gray); text-decoration: none; transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--green-light); }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; } 50% { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    .mechanics-grid { grid-template-columns: 1fr; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .oregon-inner { grid-template-columns: 1fr; }
+    .pool-item { flex-wrap: wrap; }
+    .pool-name { min-width: auto; }
+    .hero { padding: 100px 24px 60px; }
+    .hero-stat-row { gap: 32px; }
+    .register-form { flex-direction: column; }
+    .footer-inner { flex-direction: column; text-align: center; }
+    .footer-links { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">DEMOS<span>·</span>PROTOCOL</a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#pools">Investment pools</a>
+    <a href="#oregon">Oregon pilot</a>
+    <a href="#register" class="nav-cta">Register interest</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <canvas id="particles"></canvas>
+
+  <p class="hero-eyebrow">Oregon · 2026 · Direct Democracy Currency</p>
+
+  <h1 class="hero-title">
+    Your investment<br>
+    <span class="accent">is your vote.</span>
+  </h1>
+
+  <p class="hero-subtitle">
+    A blockchain-based civic currency giving every Oregon resident an equal stake in their community's future.
+  </p>
+
+  <div class="hero-ctas">
+    <a href="#register" class="btn-primary">Join the pilot</a>
+    <a href="#how" class="btn-secondary">Learn how it works</a>
+  </div>
+
+  <div class="hero-stat-row">
+    <div class="hero-stat">
+      <span class="hero-stat-num">5,000</span>
+      <span class="hero-stat-label">Pilot target</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">1 DMT</span>
+      <span class="hero-stat-label">Free for every resident</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">Oct 2026</span>
+      <span class="hero-stat-label">Launch date</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">0%</span>
+      <span class="hero-stat-label">Speculation</span>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="how">
+  <div class="section-inner">
+    <span class="section-label reveal">The problem</span>
+    <h2 class="section-title reveal">Two broken systems.<br>One solution.</h2>
+    <div class="divider reveal"></div>
+    <p class="section-body reveal">Democracy runs on election cycles. Markets run on capital accumulation. Neither consistently serves ordinary people. Demos collapses both into a single act.</p>
+
+    <div class="problem-grid reveal">
+      <div class="problem-cell">
+        <span class="problem-cell-num">01</span>
+        <h3>Broken democracy</h3>
+        <p>We vote every few years and hope our representatives carry our will into institutions built to resist change. Wealth buys access. Access shapes policy. The loop closes.</p>
+      </div>
+      <div class="problem-cell">
+        <span class="problem-cell-num">02</span>
+        <h3>Broken markets</h3>
+        <p>Markets allocate resources efficiently — and indifferently. They don't ask what a community needs. They ask what returns a profit. Ordinary citizens are priced out at every level.</p>
+      </div>
+      <div class="problem-cell">
+        <span class="problem-cell-num">03</span>
+        <h3>Separated power</h3>
+        <p>Voting and spending have been separated from each other and captured by those with resources to game both. The ordinary citizen's vote comes once every few years.</p>
+      </div>
+      <div class="problem-cell" style="background: rgba(0,135,90,0.06)">
+        <span class="problem-cell-num" style="color: rgba(0,201,122,0.3)">→</span>
+        <h3 style="color: var(--green-light)">The Demos answer</h3>
+        <p>When you allocate tokens to a program, you simultaneously fund it and vote for it. The aggregate of all allocations, updated in real time, is the living budget of the community.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MECHANICS -->
+<section class="mechanics" id="mechanics">
+  <div class="section-inner">
+    <span class="section-label reveal">How it works</span>
+    <h2 class="section-title reveal">Three mechanics.<br>One system.</h2>
+    <div class="divider reveal"></div>
+
+    <div class="mechanics-grid">
+      <div class="mechanic-card reveal">
+        <span class="mechanic-num">01 — Universal Entry</span>
+        <h3>Every Oregon resident gets one free token</h3>
+        <p>No purchase required. No technical knowledge required. A simple web registration links an Oregon address to a digital wallet and issues your Demos Token automatically. Everyone begins equal.</p>
+      </div>
+      <div class="mechanic-card reveal">
+        <span class="mechanic-num">02 — Wealth Ceiling</span>
+        <h3>No wallet can hoard beyond the cap</h3>
+        <p>The ceiling is enforced at the protocol level — in code, not in policy. A transaction that would push a wallet above the limit is automatically rejected. Hoarding becomes structurally impossible.</p>
+      </div>
+      <div class="mechanic-card reveal">
+        <span class="mechanic-num">03 — Investment = Vote</span>
+        <h3>Your allocation is your ballot</h3>
+        <p>Direct tokens to schools, veteran housing, local farms, clean energy, or small business grants. Each allocation simultaneously funds the program and registers your democratic preference. No election cycle. No interpretation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<div class="quote-section">
+  <p class="quote-text">"The people, and only the people, have the right to govern themselves — not through representatives who speak for them, but through systems that express their will directly."</p>
+  <p class="quote-attr">Demos Protocol · Founding Vision · 2026</p>
+</div>
+
+<!-- INVESTMENT POOLS -->
+<section class="pools" id="pools">
+  <div class="section-inner">
+    <span class="section-label reveal">Community investment pools</span>
+    <h2 class="section-title reveal">Where your tokens flow.</h2>
+    <div class="divider reveal"></div>
+    <p class="section-body reveal">Citizens vote on which programs to fund. Returns flow back to the community commons — and get redeployed democratically. Wealth circulates. It doesn't accumulate.</p>
+
+    <div class="pools-list">
+      <div class="pool-item reveal">
+        <span class="pool-arrow">→</span>
+        <span class="pool-name">Oregon Farm Succession Fund</span>
+        <span class="pool-desc">Buys farmland from retiring farmers via community land trust. Keeps Oregon agriculture in Oregon hands — not corporate acquisition.</span>
+        <span class="pool-return">4–7% est.</span>
+      </div>
+      <div class="pool-item reveal">
+        <span class="pool-arrow">→</span>
+        <span class="pool-name">Local Business Microloan Fund</span>
+        <span class="pool-desc">Low-interest loans to Oregon small businesses. Repaid with interest back to the commons pool for democratic redeployment.</span>
+        <span class="pool-return">5–9% est.</span>
+      </div>
+      <div class="pool-item reveal">
+        <span class="pool-arrow">→</span>
+        <span class="pool-name">Community Solar Cooperative</span>
+        <span class="pool-desc">Investment in Oregon clean energy projects with ongoing revenue share flowing back to the community.</span>
+        <span class="pool-return">6–10% est.</span>
+      </div>
+      <div class="pool-item reveal">
+        <span class="pool-arrow">→</span>
+        <span class="pool-name">Affordable Housing Trust</span>
+        <span class="pool-desc">Develops workforce housing at below-market rents. Returns flow to the commons. Housing as a community asset, not an extraction tool.</span>
+        <span class="pool-return">3–6% est.</span>
+      </div>
+      <div class="pool-item reveal">
+        <span class="pool-arrow">→</span>
+        <span class="pool-name">Veterans Enterprise Fund</span>
+        <span class="pool-desc">Priority loans to veteran-owned Oregon businesses. Community-backed capital for those who served Oregon.</span>
+        <span class="pool-return">5–8% est.</span>
+      </div>
+      <div class="pool-item reveal">
+        <span class="pool-arrow">→</span>
+        <span class="pool-name">Immigrant Worker Cooperative</span>
+        <span class="pool-desc">Funds worker-owned cooperatives in agriculture and services. The community decides who participates — not the legislature.</span>
+        <span class="pool-return">4–7% est.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OREGON -->
+<section class="oregon" id="oregon">
+  <div class="section-inner">
+    <div class="oregon-inner">
+      <div>
+        <span class="section-label reveal">The Oregon pilot</span>
+        <h2 class="section-title reveal">Why Oregon.<br>Why 2026.</h2>
+        <div class="divider reveal"></div>
+        <p class="section-body reveal">Oregon was one of the first states to adopt ballot initiatives and referendums. Its citizens have a documented history of bypassing representative institutions when those institutions fail. Demos is a digital evolution of something Oregon has always believed.</p>
+
+        <div class="oregon-facts">
+          <div class="oregon-fact reveal">
+            <span class="oregon-fact-icon">🌲</span>
+            <div class="oregon-fact-text">
+              <h4>Progressive civic culture</h4>
+              <p>A century of direct democracy tradition — ballot initiatives, referendums, and citizen participation at the state level.</p>
+            </div>
+          </div>
+          <div class="oregon-fact reveal">
+            <span class="oregon-fact-icon">🌾</span>
+            <div class="oregon-fact-text">
+              <h4>Real stakes</h4>
+              <p>Oregon farms are disappearing to corporate acquisition at an accelerating rate. The Farm Succession Fund is a direct response to a documented crisis.</p>
+            </div>
+          </div>
+          <div class="oregon-fact reveal">
+            <span class="oregon-fact-icon">⚖️</span>
+            <div class="oregon-fact-text">
+              <h4>The people decide who belongs</h4>
+              <p>Immigrant residents are included as full participants via community vote — not waiting on legislative action. The General Will, executable.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="oregon-visual reveal">
+        <div class="oregon-token">
+          <div class="oregon-token-inner">
+            <span class="oregon-token-dmt">DMT</span>
+            <span class="oregon-token-sub">Demos Token</span>
+          </div>
+        </div>
+        <div class="pilot-target">
+          <span class="pilot-target-num">5,000</span>
+          <span class="pilot-target-label">Oregon pilot participants</span>
+        </div>
+        <div class="pilot-target" style="margin-top: 0;">
+          <span class="pilot-target-num">Oct 1</span>
+          <span class="pilot-target-label">2026 launch date</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGISTER -->
+<section class="register" id="register">
+  <div class="section-inner">
+    <span class="section-label">Join the experiment</span>
+    <h2 class="section-title">Be part of the pilot.</h2>
+    <div class="divider" style="margin: 24px auto;"></div>
+    <p class="section-body" style="margin: 0 auto; text-align: center;">
+      Register your interest now. Oregon residents will receive one free Demos Token at launch. Outside supporters can fund the community investment pools without voting rights.
+    </p>
+
+    <form class="register-form" onsubmit="handleRegister(event)">
+      <input type="email" placeholder="Your email address" id="reg-email" required>
+      <button type="submit">Register</button>
+    </form>
+    <p class="register-note">Oregon resident or outside supporter — we'll ask you when we launch. No spam. No data sold. Ever.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">DEMOS<span>·</span>PROTOCOL</div>
+    <div class="footer-links">
+      <a href="https://github.com/demosprotocol-org" target="_blank">GitHub</a>
+      <a href="https://twitter.com/demosprotocol" target="_blank">X</a>
+      <a href="https://instagram.com/demosprotocol" target="_blank">Instagram</a>
+      <a href="mailto:demosprotocol@proton.me">Contact</a>
+    </div>
+    <p class="footer-copy">© 2026 Demos Protocol · Oregon, USA · Built in public</p>
+  </div>
+</footer>
+
+<script>
+// PARTICLES
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.r = Math.random() * 1.5 + 0.5;
+    this.alpha = Math.random() * 0.5 + 0.1;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,201,122,${this.alpha})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+function drawLines() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,135,90,${0.15 * (1 - dist/120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  drawLines();
+  requestAnimationFrame(animate);
+}
+animate();
+
+// SCROLL REVEAL
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+
+// REGISTER
+function handleRegister(e) {
+  e.preventDefault();
+  const email = document.getElementById('reg-email').value;
+  const btn = e.target.querySelector('button');
+  btn.textContent = 'Registered ✓';
+  btn.style.background = '#00c97a';
+  document.getElementById('reg-email').value = '';
+  setTimeout(() => { btn.textContent = 'Register'; btn.style.background = ''; }, 3000);
+}
+</script>
+</body>
+</html>
